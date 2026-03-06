@@ -36,8 +36,10 @@ jobs:
 
       - name: Merge master into release branches
         shell: bash
+        env:
+          RELEASE_PATTERN: ${{ inputs.release_branch_pattern }}
         run: |
-          RELEASES=$(git branch -r | sed 's|origin/||' | tr -d ' ' | grep -E '${{ inputs.release_branch_pattern }}' | sort -t'_' -k2)
+          RELEASES=$(git branch -r | sed 's|origin/||' | tr -d ' ' | grep -E "$RELEASE_PATTERN" | sort -t'_' -k2)
 
           if [ -z "$RELEASES" ]; then
             if [ "${{ inputs.fallback_to_develop }}" = "true" ]; then
