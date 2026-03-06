@@ -14,6 +14,9 @@ on:
         type: boolean
         default: true
 
+permissions:
+  contents: write
+
 jobs:
   sync-master-to-releases:
     runs-on: ubuntu-latest
