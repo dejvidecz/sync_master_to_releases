@@ -51,11 +51,16 @@ jobs:
           fi
 
       - name: Notify Teams on failure
-        if: failure() && secrets.SYNC_TEAMS_WEBHOOK_URL != ''
+        if: failure()
         shell: bash
         env:
+          SYNC_TEAMS_WEBHOOK_URL: ${{ secrets.SYNC_TEAMS_WEBHOOK_URL }}
           TEAMS_MENTION_EMAILS: ${{ secrets.SYNC_TEAMS_MENTION_EMAILS }}
         run: |
+          if [ -z "$SYNC_TEAMS_WEBHOOK_URL" ]; then
+            echo "SYNC_TEAMS_WEBHOOK_URL not set, skipping Teams notification"
+            exit 0
+          fi
           REPO="${{ github.repository }}"
           RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
@@ -119,4 +124,4 @@ jobs:
           }
           EOF
 
-          curl -H "Content-Type: application/json" -d @/tmp/teams-payload.json "${{ secrets.SYNC_TEAMS_WEBHOOK_URL }}"
+          curl -H "Content-Type: application/json" -d @/tmp/teams-payload.json "$SYNC_TEAMS_WEBHOOK_URL"
